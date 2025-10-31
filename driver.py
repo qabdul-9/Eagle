@@ -1,30 +1,22 @@
 from bs4 import BeautifulSoup
 import requests
+from scraper import AmazonImageScraper
 
-def fetch_page(url, headers=None):
-    response = requests.get(url, headers=headers)
-    if response.status_code != 200: #A response code of 200 indicates success
-        raise Exception(f"Failed to load page {url}, status code: {response.status_code}")
-    
-    return response.text
 
 def main():
-    url = "https://www.amazon.com/"
-    headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                  "AppleWebKit/537.36 (KHTML, like Gecko) "
-                  "Chrome/123.0.0.0 Safari/537.36"
-    }
+    url = "https://www.amazon.com/s?k="
+    scraper = AmazonImageScraper(url, headers=None)
+
+    usrinput = input("Enter the product you want to search for on Amazon: ")
+    url += usrinput.replace(" ", "+") #Replace spaces with '+' for URL encoding
+
     
-    page_content = fetch_page(url, headers=headers)
-    soup = BeautifulSoup(page_content, 'html.parser')
-    if(soup is None):
-        print("Failed to parse the page content.")
-        return
-    else:
-        title = soup.title.string
+    soup = scraper.makeSoup(url)
+
     
-    print(f"Page Title: {title}")
+
+    
+    print(f"Page Title: {soup.title}")
     print(soup.prettify()[:1000])
 
 
