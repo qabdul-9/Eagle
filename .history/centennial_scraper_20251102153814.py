@@ -28,17 +28,17 @@ def search_page(keyword="impact"):
     return "\n".join(found_lines) if found_lines else text[:500]
 
 # if __name__ == "__main__":
-    print("Centennial Campaign Search ('exit' to quit)\n")
+#     print("Centennial Campaign Search ('exit' to quit)\n")
 
-    while True:
-        keyword = input("Enter keyword (or 'exit'): ").strip()
-        if keyword.lower() == "exit":
-            print("Goodbye!")
-            break
-        if not keyword:
-            keyword = "impact"
+#     while True:
+#         keyword = input("Enter keyword (or 'exit'): ").strip()
+#         if keyword.lower() == "exit":
+#             print("Goodbye!")
+#             break
+#         if not keyword:
+#             keyword = "impact"
 
             
-        print(f"\n--- Searching for: {keyword} ---\n")
-        print(search_page(keyword))
-        print("\n" + "-"*50 + "\n")
+#         print(f"\n--- Searching for: {keyword} ---\n")
+#         print(search_page(keyword))
+#         print("\n" + "-"*50 + "\n")

@@ -27,7 +27,7 @@ def search_page(keyword="impact"):
 
     return "\n".join(found_lines) if found_lines else text[:500]
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
     print("Centennial Campaign Search ('exit' to quit)\n")
 
     while True:

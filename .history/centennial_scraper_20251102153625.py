@@ -21,15 +21,12 @@ def search_page(keyword="impact"):
     r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
     soup = BeautifulSoup(r.text, "html.parser")
     text = soup.get_text(separator="\n")
-
     lines = [line.strip() for line in text.splitlines() if line.strip()]
     found_lines = [ln for ln in lines if keyword.lower() in ln.lower()]
-
     return "\n".join(found_lines) if found_lines else text[:500]
 
-# if __name__ == "__main__":
-    print("Centennial Campaign Search ('exit' to quit)\n")
-
+if __name__ == "__main__":
+    print("Centennial Campaign Search (type 'exit' to quit)\n")
     while True:
         keyword = input("Enter keyword (or 'exit'): ").strip()
         if keyword.lower() == "exit":
@@ -37,8 +34,6 @@ def search_page(keyword="impact"):
             break
         if not keyword:
             keyword = "impact"
-
-            
         print(f"\n--- Searching for: {keyword} ---\n")
         print(search_page(keyword))
         print("\n" + "-"*50 + "\n")
