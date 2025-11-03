@@ -1,11 +1,11 @@
 from bs4 import BeautifulSoup
 import requests
-from scraper import AmazonImageScraper
+from soupMK import SoupMaker
 
 
 def main():
     url = "https://www.amazon.com/s?k="
-    scraper = AmazonImageScraper(url, headers=None)
+    scraper = SoupMaker(url, headers=None)
 
     usrinput = input("Enter the product you want to search for on Amazon: ")
     url += usrinput.replace(" ", "+") #Replace spaces with '+' for URL encoding
