@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-
-class AmazonImageScraper:
+class SoupMaker:
     def __init__(self, set_url, headers=None):
         self.url = set_url
         self.headers = headers if headers is not None else {
@@ -14,6 +13,7 @@ class AmazonImageScraper:
             "Connection": "keep-alive"
         }
 
+    @staticmethod
     def makeSoup(self, url=None):
         target_url = url if url is not None else self.url
         try:
@@ -31,4 +31,5 @@ class AmazonImageScraper:
             raise Exception("Failed to parse the page content.")
         
         return soup
+    
     
