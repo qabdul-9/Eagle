@@ -13,7 +13,7 @@ class SoupMaker:
             "Connection": "keep-alive"
         }
 
-    @staticmethod
+    
     def makeSoup(self, url=None):
         target_url = url if url is not None else self.url
         try:
