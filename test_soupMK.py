@@ -28,4 +28,16 @@ class TestSoupMK(unittest.TestCase):
         soup_maker = SoupMaker()
         with self.assertRaises(ValueError):
             soup_maker.makeSoup()
+
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_non_200_status(self, mock_get):
+        url = "https://example.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 9030
+        mock_response.text = "<html><head><title>Hello</title></head><"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url=url)
+        with self.assertRaises(Exception):
+            soup_maker.makeSoup()
     
