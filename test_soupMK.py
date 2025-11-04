@@ -1,0 +1,19 @@
+import unittest
+from soupMK import SoupMaker
+from bs4 import BeautifulSoup
+from unittest.mock import patch, MagicMock 
+
+class TestSoupMK(unittest.TestCase):
+
+    @patch('soupMK.requests.Session.get') #Mocking the requests.Session.get method to avoid real HTTP requests
+    def test_makeSoup_success(self, mock_get):
+        url = "http://example.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><head><title>Hello</title></head><"
+        mock_get.return_value = mock_response #Tells the mock to return our mock_response when called
+
+        soup_maker = SoupMaker(set_url=url)
+        soup = soup_maker.makeSoup()
+        self.assertIsInstance(soup, BeautifulSoup) #Check if the returned object is an instance of BeautifulSoup
+        self.assertEqual(soup.title.string, "Hello") #Check if the title is as expected
