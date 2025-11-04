@@ -41,3 +41,19 @@ class TestSoupMK(unittest.TestCase):
         with self.assertRaises(Exception):
             soup_maker.makeSoup()
     
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_custom_headers(self, mock_get):
+        url = "http://example.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><head><title>Custom Header</title></head><"
+        mock_get.return_value = mock_response
+
+        custom_headers = {
+            "User-Agent": "CustomAgent/1.0",
+            "Accept": "text/html"
+        }
+        soup_maker = SoupMaker(set_url=url, headers=custom_headers)
+        self.assertEqual(soup_maker.headers, custom_headers)
+
+    
