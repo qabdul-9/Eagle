@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 class SoupMaker:
-    def __init__(self, set_url, headers=None):
+    def __init__(self, set_url=None, headers=None):
         self.url = set_url
         self.headers = headers if headers is not None else {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -15,7 +15,13 @@ class SoupMaker:
 
     
     def makeSoup(self, url=None):
-        target_url = url if url is not None else self.url
+        if url is not None:
+            target_url = url
+        else:
+            target_url = self.url
+        
+        if target_url is None:
+            raise ValueError("No URL provided.")
         try:
             session = requests.Session()
             response = session.get(target_url, headers=self.headers, timeout=10)
