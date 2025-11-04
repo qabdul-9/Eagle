@@ -23,3 +23,9 @@ class TestSoupMK(unittest.TestCase):
         soup_maker = SoupMaker(set_url=url)
         with self.assertRaises(Exception): #Expecting an exception to be raised for invalid URL
             soup_maker.makeSoup()
+
+    def test_makeSoup_no_url(self):
+        soup_maker = SoupMaker()
+        with self.assertRaises(ValueError):
+            soup_maker.makeSoup()
+    
