@@ -17,3 +17,9 @@ class TestSoupMK(unittest.TestCase):
         soup = soup_maker.makeSoup()
         self.assertIsInstance(soup, BeautifulSoup) #Check if the returned object is an instance of BeautifulSoup
         self.assertEqual(soup.title.string, "Hello") #Check if the title is as expected
+    
+    def test_makeSoup_invalid_url(self):
+        url = "http://invalid-url"
+        soup_maker = SoupMaker(set_url=url)
+        with self.assertRaises(Exception): #Expecting an exception to be raised for invalid URL
+            soup_maker.makeSoup()
