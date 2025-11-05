@@ -37,5 +37,5 @@ class SoupMaker:
             raise Exception("Failed to parse the page content.")
         
         return soup
-    
-    
+
+

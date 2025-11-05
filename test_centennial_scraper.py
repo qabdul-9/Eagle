@@ -3,4 +3,22 @@ import centennial_scraper
 from unittest.mock import patch, MagicMock
 
 class TestCentennialScraper(unittest.TestCase):
-    
+    def setUp(self):
+        self.sample_html = """
+        <html>
+            <body>
+                <h1>Centennial Campaign</h1>
+                <p>The impact of our centennial campaign is significant.</p>
+                <p>We have raised funds for various projects.</p>
+            </body>
+        </html>
+        """
+    @patch('centennial_scraper.requests.get')
+    def test_get_centennial_campaign_impact_found(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = self.sample_html
+        mock_get.return_value = mock_response
+
+        result = centennial_scraper.get_centennial_campaign_impact(keyword="impact")
+        self.assertIn("The impact of our centennial campaign is significant.", result)
