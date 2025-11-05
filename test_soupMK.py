@@ -56,4 +56,6 @@ class TestSoupMK(unittest.TestCase):
         soup_maker = SoupMaker(set_url=url, headers=custom_headers)
         self.assertEqual(soup_maker.headers, custom_headers)
 
-    
+if __name__ == '__main__':
+    unittest.main()
+
