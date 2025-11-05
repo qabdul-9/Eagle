@@ -22,3 +22,32 @@ class TestCentennialScraper(unittest.TestCase):
 
         result = centennial_scraper.get_centennial_campaign_impact(keyword="impact")
         self.assertIn("The impact of our centennial campaign is significant.", result)
+
+    def test_get_centennial_campaign_impact_not_found(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = self.sample_html
+        mock_get.return_value = mock_response
+
+        result = centennial_scraper.get_centennial_campaign_impact(keyword="nonexistent")
+        self.assertTrue(len(result) <= 500)
+
+    def test_get_centennial_campaign_impact_empty_html(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = ""
+        mock_get.return_value = mock_response
+
+        result = centennial_scraper.get_centennial_campaign_impact(keyword="impact")
+        self.assertEqual(result, "")
+
+    def test_get_centennial_campaign_impact_http_error(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 404
+        mock_get.return_value = mock_response
+
+        result = centennial_scraper.get_centennial_campaign_impact(keyword="impact")
+        self.assertEqual(result, "")
+
+if __name__ == '__main__':
+    unittest.main()

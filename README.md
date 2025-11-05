@@ -14,4 +14,7 @@ Web-Scraping-Amazon-Mens-Fashion-Search-Images-Beautiful-Soup-Python (selected O
 
 # The Purpose of the Project
 
-This project focuses on testing the scraper.py function to ensure as many cases as possible can be made aware of and the program can have alterations and changes made according to the results of said tests.
+This project focuses on testing the scraper.py function to ensure as many cases as possible can be made aware of and the program can have alterations and changes made according to the results of said tests. 
+
+
+# Folder Structure
