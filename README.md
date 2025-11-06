@@ -14,7 +14,9 @@ Web-Scraping-Amazon-Mens-Fashion-Search-Images-Beautiful-Soup-Python (selected O
 
 # The Purpose of the Project
 
-This project focuses on testing the scraper.py function to ensure as many cases as possible can be made aware of and the program can have alterations and changes made according to the results of said tests. 
+This project focuses on testing a collection of site scraping programs to ensure as many cases as possible can be made aware of and the program can have alterations and changes made according to the results of said tests.
 
 
 # Folder Structure
+
+There are four folders in the repo if you clone it into VScode, the __pycache __ , .history, .vscode, and Assets. The cache contains the ... The history holds a collection of certain git committs that have been pushed into the repo. The .vscode has a single setting.json file pertaining to the testing enviornment. Assets is a folder with three imge files two that were given for this project and the UML diagram breaking down the project.
