@@ -93,5 +93,14 @@ class TestSoupMK(unittest.TestCase):
 
         soup_maker = SoupMaker(set_url=url)
         self.assertTrue(soup_maker.is_vaild_url(url))
+    
+    @patch('soupMK.validators.url')
+    @patch('soupMK.requests.Session.get')
+    def test_validate_url_invalid(self, mock_get, mock_validator):
+        url = "invalid-url"
+        mock_validator.return_value = False
+
+        soup_maker = SoupMaker(set_url=url)
+        self.assertFalse(soup_maker.is_vaild_url(url))
 
     
