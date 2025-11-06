@@ -83,4 +83,15 @@ class TestSoupMK(unittest.TestCase):
             soup_maker.makeSoup()
         self.assertIn("An error occurred while fetching the page:", str(context.exception))
 
+    @patch('soupMK.requests.Session.get')
+    def test_validate_url(self, mock_get):
+        url = "http://example.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><head><title>Hello</title></head><"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url=url)
+        self.assertTrue(soup_maker.is_vaild_url(url))
+
     
