@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
 from urllib.parse import urlparse
-# import urllib.robotparser
 import validators 
 
 def is_vaild_url(url):
