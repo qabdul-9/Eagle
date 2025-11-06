@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
+import validators
 class SoupMaker:
     def __init__(self, set_url=None, headers=None):
         self.url = set_url
@@ -13,6 +14,8 @@ class SoupMaker:
             "Connection": "keep-alive"
         }
 
+    def is_vaild_url(url):
+        return validators.url(url)
     
     def makeSoup(self, url=None):
         if url is not None:
@@ -22,15 +25,18 @@ class SoupMaker:
         
         if target_url is None:
             raise ValueError("No URL provided.")
-        try:
-            session = requests.Session()
-            response = session.get(target_url, headers=self.headers, timeout=10)
-            if response.status_code != 200: #A response code of 200 indicates success
-                raise Exception(f"Failed to load page {target_url}, status code: {response.status_code}")
-            
-        except requests.RequestException as e:
-            raise Exception(f"An error occurred while fetching the page: {e}")
-        
+        if self.is_vaild_url(self.url):
+            try:
+                
+                session = requests.Session()
+                response = session.get(target_url, headers=self.headers, timeout=10)
+                if response.status_code != 200: #A response code of 200 indicates success
+                    raise Exception(f"Failed to load page {target_url}, status code: {response.status_code}")
+                
+            except requests.RequestException as e:
+                raise Exception(f"An error occurred while fetching the page: {e}")
+        else:
+            raise ValueError(f"Invalid URL format: {url}")
         page_content = response.text
         soup = BeautifulSoup(page_content, 'html.parser')
         if soup is None:
