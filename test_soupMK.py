@@ -1,4 +1,5 @@
 import unittest
+import requests
 from soupMK import SoupMaker
 from bs4 import BeautifulSoup
 from unittest.mock import patch, MagicMock 
@@ -69,5 +70,17 @@ class TestSoupMK(unittest.TestCase):
         soup = soup_maker.makeSoup()
         self.assertIsInstance(soup, BeautifulSoup)
         self.assertEqual(soup.text, "")
+    
+    @patch('soupMK.validators.url')
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_timeout_error(self, mock_get, mock_validator):
+        url = "https://example.com"
+        mock_validator.return_value = True
+        mock_get.side_effect = requests.RequestException("Requests timed out")
+
+        soup_maker = SoupMaker(set_url=url)
+        with self.assertRaises(Exception) as context:
+            soup_maker.makeSoup()
+        self.assertIn("An error occurred while fetching the page:", str(context.exception))
 
     
