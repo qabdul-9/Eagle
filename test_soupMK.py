@@ -55,5 +55,19 @@ class TestSoupMK(unittest.TestCase):
         }
         soup_maker = SoupMaker(set_url=url, headers=custom_headers)
         self.assertEqual(soup_maker.headers, custom_headers)
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_empty_content(self, mock_get):
+        url = "http://example.com"
+        
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = ""
+        mock_get.return_value = mock_response
+        
+        soup_maker = SoupMaker(set_url=url)
+        soup = soup_maker.makeSoup()
+        self.assertIsInstance(soup, BeautifulSoup)
+        self.assertEqual(soup.text, "")
 
     
