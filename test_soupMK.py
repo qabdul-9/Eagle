@@ -108,5 +108,22 @@ class TestSoupMK(unittest.TestCase):
         invalid_url = "invalid-url"
         self.assertTrue(SoupMaker().is_vaild_url(valid_url))
         self.assertFalse(SoupMaker().is_vaild_url(invalid_url))
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_default_headers(self, mock_get):
+        url = "http://example.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><head><title>Hello</title></head><"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url=url)
+        soup_maker.makeSoup()
+
+        called_headers = mock_get.call_args[1]['headers']
+        self.assertEqual(called_headers, soup_maker.headers)
+        self.assertIn("User-Agent", called_headers)
+        self.assertIn("Accept", called_headers)
+        
 
     
