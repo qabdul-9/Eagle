@@ -103,4 +103,10 @@ class TestSoupMK(unittest.TestCase):
         soup_maker = SoupMaker(set_url=url)
         self.assertFalse(soup_maker.is_vaild_url(url))
 
+    def test_is_vaild_url_static(self):
+        valid_url = "http://example.com"
+        invalid_url = "invalid-url"
+        self.assertTrue(SoupMaker().is_vaild_url(valid_url))
+        self.assertFalse(SoupMaker().is_vaild_url(invalid_url))
+
     
