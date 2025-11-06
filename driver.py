@@ -1,6 +1,9 @@
 from bs4 import BeautifulSoup
 import requests
+from urllib.parse import urlparse
+import validators 
 from soupMK import SoupMaker
+
 
 
 def main():
