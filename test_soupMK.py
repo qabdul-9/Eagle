@@ -114,7 +114,7 @@ class TestSoupMK(unittest.TestCase):
         url = "http://example.com"
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_response.text = "<html><head><title>Hello</title></head><"
+        mock_response.text = "<html><head><title>Hello</title></head></html>"
         mock_get.return_value = mock_response
 
         soup_maker = SoupMaker(set_url=url)
@@ -124,6 +124,22 @@ class TestSoupMK(unittest.TestCase):
         self.assertEqual(called_headers, soup_maker.headers)
         self.assertIn("User-Agent", called_headers)
         self.assertIn("Accept", called_headers)
+
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_empty_header(self, mock_get):
+        url = "https://example.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 403 #Forbidden response code is usually sent by Amazon, Google, etc. This means the server refused acccess.
+        mock_response.text = "<html><head><title>This should not return</title></head></html>"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url=url, headers="")
+        with self.assertRaises(Exception):
+            soup_maker.makeSoup()
+        
+
+
+
         
 
     
