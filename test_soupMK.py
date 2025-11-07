@@ -151,7 +151,7 @@ class TestSoupMK(unittest.TestCase):
         self.assertEqual("Extract this title.",soup.text)
     
     @patch('soupMK.requests.Session.get')
-    def test_makeSoup_extract_title(self, mock_get):
+    def test_makeSoup_extract_image(self, mock_get):
         url = "https://example.com"
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -164,6 +164,7 @@ class TestSoupMK(unittest.TestCase):
         
         img_tag = soup.find('img')
         self.assertEqual(img_tag['src'], "stock_image.png")
+    
 
 
 
