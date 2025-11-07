@@ -165,6 +165,19 @@ class TestSoupMK(unittest.TestCase):
         img_tag = soup.find('img')
         self.assertEqual(img_tag['src'], "stock_image.png")
     
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_no_image_element(self,mock_get):
+        url = "https://example.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><head><Title>Extract this image.</title><body>" \
+                            "</body></head></html>"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url=url)
+        soup = soup_maker.makeSoup()
+        
+        self.assertIsNone(soup.find('img'))
 
 
 
