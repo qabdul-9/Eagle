@@ -92,5 +92,14 @@ class TestCentennialScraper(unittest.TestCase):
             result = centennial_scraper.search_page(keyword="impact")
             self.assertEqual(result, "")
 
+    def test_search_page_http_error(self):
+        with patch('centennial_scraper.requests.get') as mock_get:
+            mock_response = MagicMock()
+            mock_response.status_code = 404
+            mock_get.return_value = mock_response
+
+            result = centennial_scraper.search_page(keyword="impact")
+            self.assertEqual(result, "")
+
 if __name__ == '__main__':
     unittest.main()
