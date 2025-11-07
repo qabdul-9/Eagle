@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import validators
+
 class SoupMaker:
     def __init__(self, set_url=None, headers=None):
         self.url = set_url
