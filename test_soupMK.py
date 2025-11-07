@@ -136,7 +136,21 @@ class TestSoupMK(unittest.TestCase):
         soup_maker = SoupMaker(set_url=url, headers="")
         with self.assertRaises(Exception):
             soup_maker.makeSoup()
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_extract_title(self, mock_get):
+        url = "https://example.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><head><Title>Extract this title.</title></head></html>"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url=url)
+        soup = soup_maker.makeSoup()
         
+        self.assertEqual("Extract this title.",soup.text)
+
+
 
 
 
