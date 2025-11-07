@@ -149,6 +149,21 @@ class TestSoupMK(unittest.TestCase):
         soup = soup_maker.makeSoup()
         
         self.assertEqual("Extract this title.",soup.text)
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_extract_title(self, mock_get):
+        url = "https://example.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><head><Title>Extract this image.</title><body>" \
+                            "<img src='stock_image.png'></body></head></html>"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url=url)
+        soup = soup_maker.makeSoup()
+        
+        img_tag = soup.find('img')
+        self.assertEqual(img_tag['src'], "stock_image.png")
 
 
 
