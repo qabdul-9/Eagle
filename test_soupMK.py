@@ -178,10 +178,20 @@ class TestSoupMK(unittest.TestCase):
         soup = soup_maker.makeSoup()
         
         self.assertIsNone(soup.find('img'))
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_invalid_keyword(self, mock_get):
+        url = "https://example.com/s?k="
+        keyword = "invalid#/key!"
+        test_url = url + keyword
+        mock_response = MagicMock()
+        mock_response.status_code = 400 #Bad Request
+        mock_response.test = "Do not return"
+        mock_get.return_value = mock_response
 
-
-
-
+        soup_maker = SoupMaker(set_url = test_url)
+        with self.assertRaises(Exception):
+            soup_maker.makeSoup()
 
         
 
