@@ -208,6 +208,21 @@ class TestSoupMK(unittest.TestCase):
         soup = soup_maker.makeSoup(new_url)
         self.assertEqual("New Url.", soup.text)
 
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_no_title_tag(self, mock_get):
+        url = "https://sample.com"
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><body><p>This is a paragraph.</p></body></html>"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url = url)
+        soup = soup_maker.makeSoup()
+
+        self.assertIsNone(soup.find('title'))
+        self.assertIn('This is a paragraph', soup.text)
+
         
 
 if __name__ == '__main__':
