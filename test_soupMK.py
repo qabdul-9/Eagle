@@ -186,12 +186,27 @@ class TestSoupMK(unittest.TestCase):
         test_url = url + keyword
         mock_response = MagicMock()
         mock_response.status_code = 400 #Bad Request
-        mock_response.test = "Do not return"
+        mock_response.text = "Do not return"
         mock_get.return_value = mock_response
 
         soup_maker = SoupMaker(set_url = test_url)
         with self.assertRaises(Exception):
             soup_maker.makeSoup()
+
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_override_constructor(self, mock_get):
+        constructor_url = "https://constructor.com"
+        new_url = "https://newUrl.com"
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text =  "<html><head><Title>New Url.</title><body>" \
+                            "</body></head></html>"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url = constructor_url)
+        soup = soup_maker.makeSoup(new_url)
+        self.assertEqual("New Url.", soup.text)
 
         
 
