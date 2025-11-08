@@ -222,6 +222,23 @@ class TestSoupMK(unittest.TestCase):
 
         self.assertIsNone(soup.find('title'))
         self.assertIn('This is a paragraph', soup.text)
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_valid_keyword(self, mock_get):
+        url = "https://sample.com/s?k="
+        keyword = "red+shirt"
+        fe = url+keyword
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><body><p>There exists a red shirt.</p></body></html>"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url= fe)
+        soup = soup_maker.makeSoup()
+
+        self.assertEqual('There exists a red shirt.', soup.text)
+
 
         
 
