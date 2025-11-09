@@ -57,3 +57,9 @@ class SoupMaker:
         else:
             print(f" {message}")
             return None
+    @staticmethod   
+    def number_of_pages():
+        num_pages = int(input("How many pages scrapped?"))
+        while num_pages < 0:
+            num_pages = int(input("Invaild input,how many pages scrapped?"))
+        return num_pages
