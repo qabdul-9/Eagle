@@ -361,6 +361,7 @@ class TestSoupMK(unittest.TestCase):
         mock_get.return_value = mock_response
         soup = SoupMaker(set_url=url).makeSoup()
         self.assertTrue(len(soup.find_all('p')) == 5000)
+   
     
     @patch('soupMK.requests.Session.get')
     def test_makeSoup_with_script_tags(self, mock_get):
@@ -375,6 +376,7 @@ class TestSoupMK(unittest.TestCase):
         soup = SoupMaker(set_url=url).makeSoup()
         self.assertIn("Safe text", soup.text)
         self.assertNotIn("var x = 10", soup.text)
+
 
 if __name__ == '__main__':
     unittest.main()
