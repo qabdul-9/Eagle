@@ -94,3 +94,13 @@ class SoupMaker:
         while num_pages < 0:
             num_pages = int(input("Invalid input, how many pages scraped? "))
         return num_pages
+   def print_summary(self):
+        print("\n=== SCRAPE SUMMARY ===")
+        print(f"Images scraped: {self.images_scraped}")
+        print(f"Saved to folder: {os.path.abspath(self.save_folder)}")
+        print(f"Total errors: {len(self.errors)}")
+        if self.errors:
+            print("\nError details:")
+            for err in self.errors:
+                print(f" - {err}")
+        print("=========================\n")
