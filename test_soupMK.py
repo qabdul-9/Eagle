@@ -291,7 +291,17 @@ class TestSoupMK(unittest.TestCase):
         mock_get.return_value = mock_response
         soup = SoupMaker(set_url=url).makeSoup()
         self.assertIn("5 < 10 & 7 > 2", soup.text)  
-
+        
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_nested_elements(self, mock_get):
+        """Test nested HTML tags parsing correctly."""
+        url = "https://nested.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><body><div><p><span>Hello</span></p></div></body></html>"
+        mock_get.return_value = mock_response
+        soup = SoupMaker(set_url=url).makeSoup()
+        self.assertEqual(soup.find('span').text, "Hello")
 if __name__ == '__main__':
     unittest.main()
 
