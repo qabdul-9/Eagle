@@ -14,7 +14,7 @@ class SoupMaker:
             "Connection": "keep-alive"
         }
 
-    def is_vaild_url(url):
+    def is_valid_url(self, url):
         return validators.url(url)
     
     def makeSoup(self, url=None):
@@ -25,7 +25,7 @@ class SoupMaker:
         
         if target_url is None:
             raise ValueError("No URL provided.")
-        if self.is_vaild_url(self.url):
+        if self.is_valid_url(target_url):
             try:
                 
                 session = requests.Session()
@@ -45,3 +45,6 @@ class SoupMaker:
         return soup
     
     
+    
+amazon = SoupMaker("https://www.amazon.com/s?k=")
+amazon.makeSoup(amazon.url)
