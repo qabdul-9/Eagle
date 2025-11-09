@@ -238,7 +238,34 @@ class TestSoupMK(unittest.TestCase):
         soup = soup_maker.makeSoup()
 
         self.assertEqual('There exists a red shirt.', soup.text)
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_multiple_images(self, mock_get):
+        url = "https://sample.com"
 
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = """
+        <html>
+            <body>
+                <img src="red.png">
+                <img src="blue.png">
+                <img src="green.png"> 
+            </body>
+        </html>
+        """
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url = url)
+        soup = soup_maker.makeSoup()
+
+        images = soup.find_all('img')
+        expected_src = ["red.png", "blue.png", "green.png"]
+        src_list = []
+        for image in images:
+            src_list.append(image['src'])
+
+        self.assertEqual(src_list, expected_src)
 
         
 
