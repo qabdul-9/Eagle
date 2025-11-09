@@ -51,6 +51,36 @@ class SoupMaker:
         
         except Exception as e:
             return self._handle_error(f"Unexpected error: {e}")
+        if target_url is None:
+            raise ValueError("No URL provided.")
+        if self.is_vaild_url(target_url):
+            try:
+                
+                session = requests.Session()
+                response = session.get(target_url, headers=self.headers, timeout=10)
+                if response.status_code != 200: #A response code of 200 indicates success
+                    raise Exception(f"Failed to load page {target_url}, status code: {response.status_code}")
+                
+            except requests.RequestException as e:
+                raise Exception(f"An error occurred while fetching the page: {e}")
+        else:
+            raise ValueError(f"Invalid URL format: {url}")
+        page_content = response.text
+        soup = BeautifulSoup(page_content, 'html.parser')
+        if soup is None:
+            raise Exception("Failed to parse the page content.")
+        print('Scrape was successful' )
+        return soup
+    
+    def number_of_pages():
+        num_pages = int(input("How many pages scrapped?"))
+        while num_pages < 0:
+            num_pages = int(input("Invaild input,how many pages scrapped?"))
+        return num_pages 
+
+    
+amazon = SoupMaker("https://www.amazon.com/s?k=")
+amazon.makeSoup(amazon.url)
 
     def scrape_images(self, soup, limit=10):
         """Example image scraping method."""
