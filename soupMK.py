@@ -45,7 +45,12 @@ class SoupMaker:
         print('Scrape was successful' )
         return soup
     
-    
+    def number_of_pages():
+        num_pages = int(input("How many pages scrapped?"))
+        while num_pages < 0:
+            num_pages = int(input("Invaild input,how many pages scrapped?"))
+        return num_pages 
+
     
 amazon = SoupMaker("https://www.amazon.com/s?k=")
 amazon.makeSoup(amazon.url)
