@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import validators
+
 class SoupMaker:
     def __init__(self, set_url=None, headers=None):
         self.url = set_url
@@ -14,7 +15,7 @@ class SoupMaker:
             "Connection": "keep-alive"
         }
 
-    def is_valid_url(self, url):
+    def is_vaild_url(self, url):
         return validators.url(url)
     
     def makeSoup(self, url=None):
@@ -25,7 +26,7 @@ class SoupMaker:
         
         if target_url is None:
             raise ValueError("No URL provided.")
-        if self.is_valid_url(target_url):
+        if self.is_vaild_url(target_url):
             try:
                 
                 session = requests.Session()
@@ -48,3 +49,5 @@ class SoupMaker:
     
 amazon = SoupMaker("https://www.amazon.com/s?k=")
 amazon.makeSoup(amazon.url)
+
+

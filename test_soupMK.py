@@ -1,4 +1,5 @@
 import unittest
+import requests
 from soupMK import SoupMaker
 from bs4 import BeautifulSoup
 from unittest.mock import patch, MagicMock 
@@ -55,5 +56,219 @@ class TestSoupMK(unittest.TestCase):
         }
         soup_maker = SoupMaker(set_url=url, headers=custom_headers)
         self.assertEqual(soup_maker.headers, custom_headers)
-
     
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_empty_content(self, mock_get):
+        url = "http://example.com"
+        
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = ""
+        mock_get.return_value = mock_response
+        
+        soup_maker = SoupMaker(set_url=url)
+        soup = soup_maker.makeSoup()
+        self.assertIsInstance(soup, BeautifulSoup)
+        self.assertEqual(soup.text, "")
+    
+    @patch('soupMK.validators.url')
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_timeout_error(self, mock_get, mock_validator):
+        url = "https://example.com"
+        mock_validator.return_value = True
+        mock_get.side_effect = requests.RequestException("Requests timed out")
+
+        soup_maker = SoupMaker(set_url=url)
+        with self.assertRaises(Exception) as context:
+            soup_maker.makeSoup()
+        self.assertIn("An error occurred while fetching the page:", str(context.exception))
+
+    @patch('soupMK.requests.Session.get')
+    def test_validate_url(self, mock_get):
+        url = "http://example.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><head><title>Hello</title></head><"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url=url)
+        self.assertTrue(soup_maker.is_vaild_url(url))
+    
+    @patch('soupMK.validators.url')
+    @patch('soupMK.requests.Session.get')
+    def test_validate_url_invalid(self, mock_get, mock_validator):
+        url = "invalid-url"
+        mock_validator.return_value = False
+
+        soup_maker = SoupMaker(set_url=url)
+        self.assertFalse(soup_maker.is_vaild_url(url))
+
+    def test_is_vaild_url_static(self):
+        valid_url = "http://example.com"
+        invalid_url = "invalid-url"
+        self.assertTrue(SoupMaker().is_vaild_url(valid_url))
+        self.assertFalse(SoupMaker().is_vaild_url(invalid_url))
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_default_headers(self, mock_get):
+        url = "http://example.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><head><title>Hello</title></head></html>"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url=url)
+        soup_maker.makeSoup()
+
+        called_headers = mock_get.call_args[1]['headers']
+        self.assertEqual(called_headers, soup_maker.headers)
+        self.assertIn("User-Agent", called_headers)
+        self.assertIn("Accept", called_headers)
+
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_empty_header(self, mock_get):
+        url = "https://example.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 403 #Forbidden response code is usually sent by Amazon, Google, etc. This means the server refused acccess.
+        mock_response.text = "<html><head><title>This should not return</title></head></html>"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url=url, headers="")
+        with self.assertRaises(Exception):
+            soup_maker.makeSoup()
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_extract_title(self, mock_get):
+        url = "https://example.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><head><Title>Extract this title.</title></head></html>"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url=url)
+        soup = soup_maker.makeSoup()
+        
+        self.assertEqual("Extract this title.",soup.text)
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_extract_image(self, mock_get):
+        url = "https://example.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><head><Title>Extract this image.</title><body>" \
+                            "<img src='stock_image.png'></body></head></html>"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url=url)
+        soup = soup_maker.makeSoup()
+        
+        img_tag = soup.find('img')
+        self.assertEqual(img_tag['src'], "stock_image.png")
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_no_image_element(self,mock_get):
+        url = "https://example.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><head><Title>Extract this image.</title><body>" \
+                            "</body></head></html>"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url=url)
+        soup = soup_maker.makeSoup()
+        
+        self.assertIsNone(soup.find('img'))
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_invalid_keyword(self, mock_get):
+        url = "https://example.com/s?k="
+        keyword = "invalid#/key!"
+        test_url = url + keyword
+        mock_response = MagicMock()
+        mock_response.status_code = 400 #Bad Request
+        mock_response.text = "Do not return"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url = test_url)
+        with self.assertRaises(Exception):
+            soup_maker.makeSoup()
+
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_override_constructor(self, mock_get):
+        constructor_url = "https://constructor.com"
+        new_url = "https://newUrl.com"
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text =  "<html><head><Title>New Url.</title><body>" \
+                            "</body></head></html>"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url = constructor_url)
+        soup = soup_maker.makeSoup(new_url)
+        self.assertEqual("New Url.", soup.text)
+
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_no_title_tag(self, mock_get):
+        url = "https://sample.com"
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><body><p>This is a paragraph.</p></body></html>"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url = url)
+        soup = soup_maker.makeSoup()
+
+        self.assertIsNone(soup.find('title'))
+        self.assertIn('This is a paragraph', soup.text)
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_valid_keyword(self, mock_get):
+        url = "https://sample.com/s?k="
+        keyword = "red+shirt"
+        fe = url+keyword
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><body><p>There exists a red shirt.</p></body></html>"
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url= fe)
+        soup = soup_maker.makeSoup()
+
+        self.assertEqual('There exists a red shirt.', soup.text)
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_multiple_images(self, mock_get):
+        url = "https://sample.com"
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = """
+        <html>
+            <body>
+                <img src="red.png">
+                <img src="blue.png">
+                <img src="green.png"> 
+            </body>
+        </html>
+        """
+        mock_get.return_value = mock_response
+
+        soup_maker = SoupMaker(set_url = url)
+        soup = soup_maker.makeSoup()
+
+        images = soup.find_all('img')
+        expected_src = ["red.png", "blue.png", "green.png"]
+        src_list = []
+        for image in images:
+            src_list.append(image['src'])
+
+        self.assertEqual(src_list, expected_src)
+
+        
+
+if __name__ == '__main__':
+    unittest.main()
+
