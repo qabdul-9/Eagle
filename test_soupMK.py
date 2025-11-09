@@ -281,7 +281,16 @@ class TestSoupMK(unittest.TestCase):
         soup = SoupMaker(set_url=url).makeSoup()
         self.assertEqual(soup.find('a')['href'], "/about")
    
-        
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_special_characters(self, mock_get):
+        """Ensure HTML entities are decoded properly."""
+        url = "https://specialchars.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><body><p>5 &lt; 10 &amp; 7 &gt; 2</p></body></html>"
+        mock_get.return_value = mock_response
+        soup = SoupMaker(set_url=url).makeSoup()
+        self.assertIn("5 < 10 & 7 > 2", soup.text)  
 
 if __name__ == '__main__':
     unittest.main()
