@@ -291,7 +291,7 @@ class TestSoupMK(unittest.TestCase):
         mock_get.return_value = mock_response
         soup = SoupMaker(set_url=url).makeSoup()
         self.assertIn("5 < 10 & 7 > 2", soup.text)  
-        
+
     @patch('soupMK.requests.Session.get')
     def test_makeSoup_with_nested_elements(self, mock_get):
         """Test nested HTML tags parsing correctly."""
@@ -302,6 +302,19 @@ class TestSoupMK(unittest.TestCase):
         mock_get.return_value = mock_response
         soup = SoupMaker(set_url=url).makeSoup()
         self.assertEqual(soup.find('span').text, "Hello")
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_comment_tags(self, mock_get):
+        """Ensure HTML comments are ignored in the text output."""
+        url = "https://comments.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><body><!-- Hidden comment --><p>Visible</p></body></html>"
+        mock_get.return_value = mock_response
+        soup = SoupMaker(set_url=url).makeSoup()
+        self.assertNotIn("Hidden comment", soup.text)
+        self.assertIn("Visible", soup.text)
+
+
 if __name__ == '__main__':
     unittest.main()
 
