@@ -267,7 +267,126 @@ class TestSoupMK(unittest.TestCase):
 
         self.assertEqual(src_list, expected_src)
 
-        
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_relative_links(self, mock_get):
+        """Test if relative <a> links are parsed correctly."""
+        url = "https://example.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = """
+        <html><body><a href="/about">About Us</a></body></html>
+        """
+        mock_get.return_value = mock_response
+        soup = SoupMaker(set_url=url).makeSoup()
+        self.assertEqual(soup.find('a')['href'], "/about")
+   
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_special_characters(self, mock_get):
+        """Ensure HTML entities are decoded properly."""
+        url = "https://specialchars.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><body><p>5 &lt; 10 &amp; 7 &gt; 2</p></body></html>"
+        mock_get.return_value = mock_response
+        soup = SoupMaker(set_url=url).makeSoup()
+        self.assertIn("5 < 10 & 7 > 2", soup.text)  
+
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_nested_elements(self, mock_get):
+        """Test nested HTML tags parsing correctly."""
+        url = "https://nested.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><body><div><p><span>Hello</span></p></div></body></html>"
+        mock_get.return_value = mock_response
+        soup = SoupMaker(set_url=url).makeSoup()
+        self.assertEqual(soup.find('span').text, "Hello")
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_comment_tags(self, mock_get):
+        """Ensure HTML comments are ignored in the text output."""
+        url = "https://comments.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><body><!-- Hidden comment --><p>Visible</p></body></html>"
+        mock_get.return_value = mock_response
+        soup = SoupMaker(set_url=url).makeSoup()
+        self.assertNotIn("Hidden comment", soup.text)
+        self.assertIn("Visible", soup.text)
+
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_meta_tags(self, mock_get):
+        """Check if meta tag content can be found."""
+        url = "https://meta.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = """
+        <html><head><meta name='description' content='Test description'></head></html>
+        """
+        mock_get.return_value = mock_response
+        soup = SoupMaker(set_url=url).makeSoup()
+        meta = soup.find('meta', attrs={'name': 'description'})
+        self.assertEqual(meta['content'], 'Test description')
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_redirect_page(self, mock_get):
+        """Simulate a redirect (302) and ensure it raises an error."""
+        url = "https://redirect.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 302
+        mock_response.text = "<html><body>Redirecting...</body></html>"
+        mock_get.return_value = mock_response
+        with self.assertRaises(Exception):
+            SoupMaker(set_url=url).makeSoup()
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_unicode_characters(self, mock_get):
+        """Ensure Unicode characters (like emojis) are parsed correctly."""
+        url = "https://unicode.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><body><p>Emoji test 😀🔥</p></body></html>"
+        mock_get.return_value = mock_response
+        soup = SoupMaker(set_url=url).makeSoup()
+        self.assertIn("😀", soup.text)
+
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_large_html(self, mock_get):
+        """Simulate parsing a very large HTML string."""
+        url = "https://largepage.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><body>" + "<p>Test</p>" * 5000 + "</body></html>"
+        mock_get.return_value = mock_response
+        soup = SoupMaker(set_url=url).makeSoup()
+        self.assertTrue(len(soup.find_all('p')) == 5000)
+
+
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_script_tags(self, mock_get):
+        """Ensure <script> content doesn't break parsing."""
+        url = "https://scripts.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = """
+        <html><body><script>var x = 10;</script><p>Safe text</p></body></html>
+        """
+        mock_get.return_value = mock_response
+        soup = SoupMaker(set_url=url).makeSoup()
+        self.assertIn("Safe text", soup.text)
+        self.assertNotIn("var x = 10", soup.text)
+
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_doctype(self, mock_get):
+        """Handle DOCTYPE declarations without crashing."""
+        url = "https://doctype.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<!DOCTYPE html><html><body><p>DocType OK</p></body></html>"
+        mock_get.return_value = mock_response
+        soup = SoupMaker(set_url=url).makeSoup()
+        self.assertIn("DocType OK", soup.text)
 
 if __name__ == '__main__':
     unittest.main()
