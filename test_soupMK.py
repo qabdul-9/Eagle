@@ -339,6 +339,17 @@ class TestSoupMK(unittest.TestCase):
         mock_get.return_value = mock_response
         with self.assertRaises(Exception):
             SoupMaker(set_url=url).makeSoup()
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_unicode_characters(self, mock_get):
+        """Ensure Unicode characters (like emojis) are parsed correctly."""
+        url = "https://unicode.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><body><p>Emoji test 😀🔥</p></body></html>"
+        mock_get.return_value = mock_response
+        soup = SoupMaker(set_url=url).makeSoup()
+        self.assertIn("😀", soup.text)
 if __name__ == '__main__':
     unittest.main()
 
