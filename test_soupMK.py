@@ -302,6 +302,7 @@ class TestSoupMK(unittest.TestCase):
         mock_get.return_value = mock_response
         soup = SoupMaker(set_url=url).makeSoup()
         self.assertEqual(soup.find('span').text, "Hello")
+    
     @patch('soupMK.requests.Session.get')
     def test_makeSoup_with_comment_tags(self, mock_get):
         """Ensure HTML comments are ignored in the text output."""
@@ -314,6 +315,19 @@ class TestSoupMK(unittest.TestCase):
         self.assertNotIn("Hidden comment", soup.text)
         self.assertIn("Visible", soup.text)
 
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_meta_tags(self, mock_get):
+        """Check if meta tag content can be found."""
+        url = "https://meta.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = """
+        <html><head><meta name='description' content='Test description'></head></html>
+        """
+        mock_get.return_value = mock_response
+        soup = SoupMaker(set_url=url).makeSoup()
+        meta = soup.find('meta', attrs={'name': 'description'})
+        self.assertEqual(meta['content'], 'Test description')
 
 if __name__ == '__main__':
     unittest.main()
