@@ -1,4 +1,35 @@
 from bs4 import BeautifulSoup
 import unittest
+import keyword_manager
 
 class TestKeywordManager(unittest.TestCase):
+    def setUp(self):
+        self.manager = keyword_manager.KeywordManager()
+
+    def test_is_keyword_valid_with_valid_keyword(self):
+        self.assertTrue(self.manager.is_keyword_valid("validkeyword"))
+
+    def test_is_keyword_valid_with_empty_string(self):
+        self.assertFalse(self.manager.is_keyword_valid(""))
+
+    def test_is_keyword_valid_with_whitespace_string(self):
+        self.assertFalse(self.manager.is_keyword_valid("   "))
+
+    def test_is_keyword_valid_with_non_string(self):
+        self.assertFalse(self.manager.is_keyword_valid(123))
+        self.assertFalse(self.manager.is_keyword_valid(None))
+        self.assertFalse(self.manager.is_keyword_valid([]))
+
+    def test_is_invalid_keyword_with_valid_keyword(self):
+        self.assertFalse(self.manager.is_invalid_keyword("validkeyword"))
+
+    def test_is_invalid_keyword_with_empty_string(self):
+        self.assertTrue(self.manager.is_invalid_keyword(""))
+
+    def test_is_invalid_keyword_with_whitespace_string(self):
+        self.assertTrue(self.manager.is_invalid_keyword("   "))
+
+    def test_is_invalid_keyword_with_non_string(self):
+        self.assertTrue(self.manager.is_invalid_keyword(123))
+        self.assertTrue(self.manager.is_invalid_keyword(None))
+        self.assertTrue(self.manager.is_invalid_keyword([]))
