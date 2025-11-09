@@ -41,7 +41,7 @@ class SoupMaker:
         soup = BeautifulSoup(page_content, 'html.parser')
         if soup is None:
             raise Exception("Failed to parse the page content.")
-        
+        print('Scrape was successful' )
         return soup
     
     
