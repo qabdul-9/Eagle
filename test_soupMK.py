@@ -267,6 +267,20 @@ class TestSoupMK(unittest.TestCase):
 
         self.assertEqual(src_list, expected_src)
 
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_relative_links(self, mock_get):
+        """Test if relative <a> links are parsed correctly."""
+        url = "https://example.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = """
+        <html><body><a href="/about">About Us</a></body></html>
+        """
+        mock_get.return_value = mock_response
+        soup = SoupMaker(set_url=url).makeSoup()
+        self.assertEqual(soup.find('a')['href'], "/about")
+   
         
 
 if __name__ == '__main__':
