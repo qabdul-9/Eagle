@@ -328,7 +328,17 @@ class TestSoupMK(unittest.TestCase):
         soup = SoupMaker(set_url=url).makeSoup()
         meta = soup.find('meta', attrs={'name': 'description'})
         self.assertEqual(meta['content'], 'Test description')
-
+    
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_redirect_page(self, mock_get):
+        """Simulate a redirect (302) and ensure it raises an error."""
+        url = "https://redirect.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 302
+        mock_response.text = "<html><body>Redirecting...</body></html>"
+        mock_get.return_value = mock_response
+        with self.assertRaises(Exception):
+            SoupMaker(set_url=url).makeSoup()
 if __name__ == '__main__':
     unittest.main()
 
