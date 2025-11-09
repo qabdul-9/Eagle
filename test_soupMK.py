@@ -350,6 +350,17 @@ class TestSoupMK(unittest.TestCase):
         mock_get.return_value = mock_response
         soup = SoupMaker(set_url=url).makeSoup()
         self.assertIn("😀", soup.text)
+
+    @patch('soupMK.requests.Session.get')
+    def test_makeSoup_with_large_html(self, mock_get):
+        """Simulate parsing a very large HTML string."""
+        url = "https://largepage.com"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><body>" + "<p>Test</p>" * 5000 + "</body></html>"
+        mock_get.return_value = mock_response
+        soup = SoupMaker(set_url=url).makeSoup()
+        self.assertTrue(len(soup.find_all('p')) == 5000)
 if __name__ == '__main__':
     unittest.main()
 
