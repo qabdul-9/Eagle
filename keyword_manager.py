@@ -19,5 +19,12 @@ class KeywordManager:
     def get_keywords(self):
         return self.keywords
 
+    def process_keywords(self):
+        processed = []
+        for kw in self.keywords:
+            if self.is_keyword_valid(kw):
+                processed.append(kw.lower())
+        self.keywords = processed
+    
 
 

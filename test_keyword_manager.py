@@ -34,6 +34,10 @@ class TestKeywordManager(unittest.TestCase):
         self.assertTrue(self.km.is_invalid_keyword(None))
         self.assertTrue(self.km.is_invalid_keyword([]))
 
+    def test_process_keywords(self):
+        self.km.keywords = ["ValidKeyword", "  ", "", "AnotherKeyword", 123, None]
+        self.km.process_keywords()
+        self.assertEqual(self.km.get_keywords(), ["validkeyword", "anotherkeyword"])
 
 if __name__ == '__main__':
     unittest.main()
