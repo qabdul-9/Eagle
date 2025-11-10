@@ -1,0 +1,19 @@
+import unittest
+from unittest.mock import patch, Mock
+from centennial_scraper import get_centennial_campaign_impact
+
+class TestCentennialCampaignImpact(unittest.TestCase):
+
+    # Test 1: Verify function returns a list
+    @patch('centennial_scraper.requests.get')
+    def test_returns_list(self, mock_get):
+        mock_response = Mock()
+        mock_response.text = "<html><body>Test content</body></html>"
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+        
+        result = get_centennial_campaign_impact()
+        self.assertIsInstance(result, list)
+
+if __name__ == '__main__':
+    unittest.main()
