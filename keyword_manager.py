@@ -26,5 +26,7 @@ class KeywordManager:
                 processed.append(kw.lower())
         self.keywords = processed
     
-
-
+    def error_handling_example(self, keyword):
+        if self.is_invalid_keyword(keyword):
+            raise ValueError("Invalid keyword provided.")
+        return keyword.lower()

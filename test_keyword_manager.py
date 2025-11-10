@@ -39,5 +39,9 @@ class TestKeywordManager(unittest.TestCase):
         self.km.process_keywords()
         self.assertEqual(self.km.get_keywords(), ["validkeyword", "anotherkeyword"])
 
+    def test_error_handling_example_with_valid_keyword(self):
+        result = self.km.error_handling_example("ValidKeyword")
+        self.assertEqual(result, "validkeyword")
+
 if __name__ == '__main__':
     unittest.main()
