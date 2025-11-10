@@ -26,28 +26,14 @@ def search_page(keyword="impact"):
     else:
         return "\n".join(lines[:20])
 
-def read_keyword_from_file():
-    filename = "keyword.txt"
-    if os.path.exists(filename):
-        with open(filename, "r", encoding="utf-8") as f:
-            keyword = f.read().strip()
-            if keyword:
-                return keyword
-    return "default"
-
 def save_scraped_images():
     url = "https://www.xula.edu/about/centennial.html"
-    base_folder = "scrapped_assets"
-    keyword = read_keyword_from_file()
-    folder_name = os.path.join(base_folder, keyword)
-
+    folder_name = "scrapped_assets"
     if not os.path.exists(folder_name):
         os.makedirs(folder_name)
-
     response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
     soup = BeautifulSoup(response.text, "html.parser")
     images = soup.find_all("img")
-
     print("Found", len(images), "images.")
     count = 1
     for img in images:
