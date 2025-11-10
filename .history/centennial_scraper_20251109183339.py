@@ -95,13 +95,13 @@ def save_scraped_images(category="general"):
             with open(path, "wb") as file:
                 file.write(img_response.content)
             
-            print(f"Saved: {path}")
+            print(f"✓ Saved: {path}")
             successful += 1
             
         except requests.RequestException as e:
-            print(f"Error downloading {image_url}: {e}")
+            print(f"✗ Error downloading {image_url}: {e}")
         except Exception as e:
-            print(f"Error saving image {count}: {e}")
+            print(f"✗ Error saving image {count}: {e}")
         
         count += 1
     
