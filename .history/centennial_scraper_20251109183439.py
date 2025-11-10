@@ -6,13 +6,7 @@ from pathlib import Path
 
 def get_centennial_campaign_impact():
     url = "https://www.xula.edu/about/centennial.html"
-    try:
-        response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
-        response.raise_for_status()
-    except requests.RequestException as e:
-        print(f"Error fetching page: {e}")
-        return []
-    
+    response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
     soup = BeautifulSoup(response.text, "html.parser")
     text = soup.get_text(separator="\n")
     lines = []
@@ -24,9 +18,6 @@ def get_centennial_campaign_impact():
 
 def search_page(keyword="impact"):
     lines = get_centennial_campaign_impact()
-    if not lines:
-        return "Error: Could not retrieve page content."
-    
     found_lines = []
     for line in lines:
         if keyword.lower() in line.lower():
@@ -38,14 +29,11 @@ def search_page(keyword="impact"):
 
 def read_keyword_from_file():
     filename = "keyword.txt"
-    try:
-        if os.path.exists(filename):
-            with open(filename, "r", encoding="utf-8") as f:
-                keyword = f.read().strip()
-                if keyword:
-                    return keyword
-    except Exception as e:
-        print(f"Error reading keyword file: {e}")
+    if os.path.exists(filename):
+        with open(filename, "r", encoding="utf-8") as f:
+            keyword = f.read().strip()
+            if keyword:
+                return keyword
     return "default"
 
 def save_scraped_images(category="general"):
@@ -54,11 +42,7 @@ def save_scraped_images(category="general"):
     keyword = read_keyword_from_file()
     category_folder = os.path.join(main_folder, keyword, category)
 
-    try:
-        os.makedirs(category_folder, exist_ok=True)
-    except Exception as e:
-        print(f"Error creating directory: {e}")
-        return
+    os.makedirs(category_folder, exist_ok=True)
 
     try:
         response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
@@ -111,13 +95,13 @@ def save_scraped_images(category="general"):
             with open(path, "wb") as file:
                 file.write(img_response.content)
             
-            print(f"✓ Saved: {path}")
+            print(f"Saved: {path}")
             successful += 1
             
         except requests.RequestException as e:
-            print(f"✗ Error downloading {image_url}: {e}")
+            print(f"Error downloading {image_url}: {e}")
         except Exception as e:
-            print(f"✗ Error saving image {count}: {e}")
+            print(f"Error saving image {count}: {e}")
         
         count += 1
     
@@ -126,21 +110,12 @@ def save_scraped_images(category="general"):
 if __name__ == "__main__":
     print("Centennial Campaign Search ('exit' to quit, 'saveimg' to download images)\n")
     while True:
-        try:
-            keyword = input("Enter keyword: ").strip()
-        except (KeyboardInterrupt, EOFError):
-            print("\nGoodbye!")
-            break
-            
+        keyword = input("Enter keyword: ").strip()
         if keyword.lower() == "exit":
             print("Goodbye!")
             break
         elif keyword.lower() == "saveimg":
-            try:
-                category = input("Enter category name for images: ").strip()
-            except (KeyboardInterrupt, EOFError):
-                print("\nCancelled.")
-                continue
+            category = input("Enter category name for images: ").strip()
             if category == "":
                 category = "general"
             save_scraped_images(category)
